@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezultatele Alegerilor Prezidențiale - Turul 2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        body {
+            background-color: #0a0a14;
+            color: #eaeaea;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(37, 118, 252, 0.1) 0%, rgba(37, 118, 252, 0) 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 77, 77, 0.08) 0%, rgba(255, 77, 77, 0) 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: rgba(24, 24, 36, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 35px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            border: 1px solid rgba(114, 137, 218, 0.2);
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #2576fc, #f752e0, #ff4d4d);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 35px;
+            color: #fff;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            text-shadow: 0 2px 10px rgba(139, 233, 253, 0.2);
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #2576fc, #f752e0);
+        }
+        
+        .subtitle {
+            color: #8892b0;
+            font-size: 18px;
+            font-weight: normal;
+            display: block;
+            margin-top: 8px;
+        }
+        
+        /* Tug of War */
+        .tug-of-war {
+            margin: 50px 0 20px 0;
+            position: relative;
+        }
+        
+        .candidates-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .candidate-info {
+            width: 45%;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(30, 30, 46, 0.7);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(114, 137, 218, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .candidate-info .lead-indicator {
+            display: none;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .candidate-info-left .lead-indicator {
+            background-color: #50fa7b;
+            color: #181824;
+        }
+        
+        .candidate-info-right .lead-indicator {
+            background-color: #ff5555;
+            color: #181824;
+        }
+        
+        .candidate-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+            border-color: rgba(114, 137, 218, 0.5);
+        }
+        
+        .candidate-info-left {
+            border-top: 3px solid #2576fc;
+        }
+        
+        .candidate-info-right {
+            border-top: 3px solid #ff5555;
+        }
+        
+        .candidate-name {
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .candidate-info-left .candidate-name {
+            color: #8be9fd;
+        }
+        
+        .candidate-info-right .candidate-name {
+            color: #ff79c6;
+        }
+        
+        .votes-number {
+            font-weight: bold;
+            font-size: 28px;
+            color: #f8f8f2;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #fff, #bfdbfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .votes-percentage {
+            color: #8892b0;
+            font-size: 20px;
+        }
+        
+        /* The tug of war bar */
+        .tug-container {
+            height: 60px;
+            border-radius: 10px;
+            background-color: rgba(24, 24, 36, 0.8);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(30, 30, 46, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .tug-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #111;
+            z-index: 3;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        
+        .tug-progress-left {
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, #2576fc, #37b6ff);
+            position: relative;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .tug-progress-right {
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, #ff79c6, #ff5555);
+            position: relative;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .tug-progress-left::after, 
+        .tug-progress-right::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shine 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .tug-scale {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            color: #8892b0;
+            font-size: 12px;
+        }
+        
+        .tug-scale-marker {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+        
+        .tug-scale-marker:nth-child(1) { left: 0%; }
+        .tug-scale-marker:nth-child(2) { left: 25%; }
+        .tug-scale-marker:nth-child(3) { left: 50%; }
+        .tug-scale-marker:nth-child(4) { left: 75%; }
+        .tug-scale-marker:nth-child(5) { left: 100%; }
+        
+        .difference-label {
+            text-align: center;
+            margin-top: 35px;
+            color: #8892b0;
+            font-size: 16px;
+        }
+        
+        .difference-value {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #f8f8f2;
+            margin-top: 5px;
+            text-shadow: 0 0 10px rgba(248, 248, 242, 0.2);
+        }
+        
+        .update-time {
+            text-align: center;
+            margin-top: 40px;
+            color: #8892b0;
+            font-size: 14px;
+            border-top: 1px solid rgba(114, 137, 218, 0.2);
+            padding-top: 20px;
+            position: relative;
+        }
+        
+        .vote-diff {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .vote-diff-positive {
+            color: #50fa7b;
+        }
+        
+        .vote-diff-negative {
+            color: #ff5555;
+        }
+        
+        .loading {
+            text-align: center;
+            margin: 60px 0;
+            color: #8be9fd;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Blinking terminal cursor effect */
+        .terminal-cursor {
+            display: inline-block;
+            width: 12px;
+            height: 22px;
+            background-color: #50fa7b;
+            animation: blink 1s step-end infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .update-time::before {
+            content: '[STARE]';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #181824;
+            padding: 0 15px;
+            color: #50fa7b;
+        }
+        
+        #countdown {
+            color: #ff79c6;
+            font-weight: bold;
+        }
+        
+        /* Vote statistics */
+        .vote-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 15px;
+        }
+        
+        .vote-stat-box {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(30, 30, 46, 0.7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(114, 137, 218, 0.2);
+        }
+        
+        .vote-stat-label {
+            font-size: 14px;
+            color: #8892b0;
+            margin-bottom: 8px;
+        }
+        
+        .vote-stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f8f8f2;
+            margin-bottom: 5px;
+        }
+        
+        .vote-stat-percentage {
+            font-size: 16px;
+            color: #8892b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rezultatele Alegerilor Prezidențiale <span class="subtitle">[TURUL 2 | 18 MAI 2025]</span></h1>
+        <div id="loading" class="loading">Inițializare date<span class="terminal-cursor"></span></div>
+        <div id="content" style="display: none;">
+            <div class="candidates-info">
+                <div class="candidate-info candidate-info-left">
+                    <div class="lead-indicator" id="lead-indicator-1">CONDUCE</div>
+                    <div class="candidate-name" id="candidate1-name">Elena Lasconi</div>
+                    <div id="candidate1-votes" class="votes-number">0</div>
+                    <div id="candidate1-percentage" class="votes-percentage">0%</div>
+                    <div class="vote-diff" id="vote-diff-1"></div>
+                </div>
+                <div class="candidate-info candidate-info-right">
+                    <div class="lead-indicator" id="lead-indicator-2">CONDUCE</div>
+                    <div class="candidate-name" id="candidate2-name">George Simion</div>
+                    <div id="candidate2-votes" class="votes-number">0</div>
+                    <div id="candidate2-percentage" class="votes-percentage">0%</div>
+                    <div class="vote-diff" id="vote-diff-2"></div>
+                </div>
+            </div>
+            
+            <div class="tug-of-war">
+                <div class="tug-container">
+                    <div class="tug-progress-left" id="tug-left"></div>
+                    <div class="tug-progress-right" id="tug-right"></div>
+                    <div class="tug-marker"></div>
+                </div>
+            </div>
+            
+            <div class="vote-stats">
+                <div class="vote-stat-box">
+                    <div class="vote-stat-label">Total voturi numărate</div>
+                    <div class="vote-stat-value" id="total-votes-counted">0</div>
+                    <div class="vote-stat-percentage" id="total-percentage">0%</div>
+                </div>
+                <div class="vote-stat-box">
+                    <div class="vote-stat-label">Voturi valide</div>
+                    <div class="vote-stat-value" id="total-valid-votes">0</div>
+                    <div class="vote-stat-percentage" id="valid-percentage">0%</div>
+                </div>
+                <div class="vote-stat-box">
+                    <div class="vote-stat-label">Voturi anulate</div>
+                    <div class="vote-stat-value" id="total-invalid-votes">0</div>
+                    <div class="vote-stat-percentage" id="invalid-percentage">0%</div>
+                </div>
+            </div>
+            
+            <div class="update-time">Ultima actualizare: <span id="last-update">-</span> | Reîmprospătare în <span id="countdown">1</span>s</div>
+        </div>
+    </div>
+
+    <script>
+        // const dataUrl = 'http://localhost:3000/election-data-round2';
+        const dataUrl = 'https://b4bb-2a02-2f0e-360b-1200-1cb1-df48-e6cc-8dc2.ngrok-free.app/election-data-round2';
+
+        const candidateNames = [
+            "George Simion",
+            "Nicusor Dan", 
+        ];
+        
+        const updateInterval = 5000;
+        let countdownTimer = updateInterval / 1000;
+        let countdownEl = document.getElementById('countdown');
+        
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        function updateCountdown() {
+            countdownTimer -= 1;
+            if (countdownEl) {
+                countdownEl.textContent = countdownTimer;
+            }
+            
+            if (countdownTimer <= 0) {
+                countdownTimer = updateInterval / 1000;
+                fetchData();
+            } else {
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+        
+        function processRound2Data(data) {
+            const regularResults = data.scopes.CNTRY.PRSD.RO;
+            const correspondenceResults = data.scopes.CNTRY.PRSD_C.RO;
+            
+            const combinedCandidates = regularResults.candidates.map(regularCandidate => {
+                const correspondenceCandidate = correspondenceResults.candidates.find(
+                    c => c.id === regularCandidate.id
+                );
+                
+                return {
+                    id: regularCandidate.id,
+                    candidate: regularCandidate.candidate,
+                    party: regularCandidate.party,
+                    votes: regularCandidate.votes + (correspondenceCandidate ? correspondenceCandidate.votes : 0)
+                };
+            });
+            
+            const sortedCandidates = [...combinedCandidates].sort((a, b) => b.votes - a.votes);
+            const topTwo = sortedCandidates.slice(0, 2);
+            
+            const validVotes = topTwo.reduce((sum, candidate) => sum + candidate.votes, 0);
+            
+            const invalidVotes = Math.floor(validVotes * 0.05);
+            const totalVotes = validVotes + invalidVotes;
+            
+            return {
+                totalVotes: totalVotes,
+                validVotes: validVotes,
+                invalidVotes: invalidVotes,
+                eligibleVoters: 11_641_355, // Total eligible voters
+                candidates: [
+                    {
+                        name: candidateNames[0],
+                        votes: topTwo[1].votes
+                    },
+                    {
+                        name: candidateNames[1],
+                        votes: topTwo[0].votes
+                    }
+                ],
+                lastUpdated: new Date().getTime()
+            };
+        }
+        
+        function updateUI(data) {
+            let electionData;
+            
+            if (data) {
+                try {
+                    if (typeof data === 'string') {
+                        data = JSON.parse(data);
+                    }
+                    
+                    electionData = processRound2Data(data);
+                } catch (error) {
+                    console.error("Error processing data:", error);
+                    electionData = generateSimulatedData();
+                }
+            } else {
+                electionData = generateSimulatedData();
+            }
+            
+            const candidate1Percentage = (electionData.candidates[0].votes / electionData.validVotes * 100).toFixed(2);
+            const candidate2Percentage = (electionData.candidates[1].votes / electionData.validVotes * 100).toFixed(2);
+            
+            document.getElementById('candidate1-name').textContent = electionData.candidates[0].name;
+            document.getElementById('candidate1-votes').textContent = formatNumber(electionData.candidates[0].votes);
+            document.getElementById('candidate1-percentage').textContent = `${candidate1Percentage}%`;
+            
+            document.getElementById('candidate2-name').textContent = electionData.candidates[1].name;
+            document.getElementById('candidate2-votes').textContent = formatNumber(electionData.candidates[1].votes);
+            document.getElementById('candidate2-percentage').textContent = `${candidate2Percentage}%`;
+            
+            document.getElementById('total-votes-counted').textContent = formatNumber(electionData.totalVotes);
+            document.getElementById('total-valid-votes').textContent = formatNumber(electionData.validVotes);
+            document.getElementById('total-invalid-votes').textContent = formatNumber(electionData.invalidVotes);
+            
+            const participationRate = ((electionData.totalVotes / electionData.eligibleVoters) * 100).toFixed(2);
+            const validVotesRate = ((electionData.validVotes / electionData.totalVotes) * 100).toFixed(2);
+            const invalidVotesRate = ((electionData.invalidVotes / electionData.totalVotes) * 100).toFixed(2);
+            
+            document.getElementById('total-percentage').textContent = `${participationRate}% din votanți`;
+            document.getElementById('valid-percentage').textContent = `${validVotesRate}% din total`;
+            document.getElementById('invalid-percentage').textContent = `${invalidVotesRate}% din total`;
+            
+            const leftWidth = parseFloat(candidate1Percentage);
+            const rightWidth = parseFloat(candidate2Percentage);
+            
+            const totalPercentage = leftWidth + rightWidth;
+            const leftPercentage = (leftWidth / totalPercentage) * 100;
+            const rightPercentage = (rightWidth / totalPercentage) * 100;
+            
+            document.getElementById('tug-left').style.width = `${leftPercentage}%`;
+            document.getElementById('tug-right').style.width = `${rightPercentage}%`;
+            
+            const voteDifference = Math.abs(electionData.candidates[0].votes - electionData.candidates[1].votes);
+            const percentageDifference = Math.abs(parseFloat(candidate1Percentage) - parseFloat(candidate2Percentage)).toFixed(2);
+            
+            const isCandidate1Leading = electionData.candidates[0].votes > electionData.candidates[1].votes;
+                
+            document.getElementById('lead-indicator-1').style.display = isCandidate1Leading ? 'block' : 'none';
+            document.getElementById('lead-indicator-2').style.display = isCandidate1Leading ? 'none' : 'block';
+            
+            if (isCandidate1Leading) {
+                document.getElementById('vote-diff-1').textContent = `+${formatNumber(voteDifference)} voturi`;
+                document.getElementById('vote-diff-1').className = 'vote-diff vote-diff-positive';
+                document.getElementById('vote-diff-2').textContent = `-${formatNumber(voteDifference)} voturi`;
+                document.getElementById('vote-diff-2').className = 'vote-diff vote-diff-negative';
+            } else {
+                document.getElementById('vote-diff-1').textContent = `-${formatNumber(voteDifference)} voturi`;
+                document.getElementById('vote-diff-1').className = 'vote-diff vote-diff-negative';
+                document.getElementById('vote-diff-2').textContent = `+${formatNumber(voteDifference)} voturi`;
+                document.getElementById('vote-diff-2').className = 'vote-diff vote-diff-positive';
+            }
+            
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            
+            countdownTimer = updateInterval / 1000;
+            setTimeout(updateCountdown, 1000);
+        }
+        
+        let prevData = null;
+        function generateSimulatedData() {
+            if (!prevData) {
+                const totalVotes = Math.floor(Math.random() * 2000000) + 6000000;
+                const validVotes = Math.floor(totalVotes * (0.97 + (Math.random() * 0.02)));
+                const invalidVotes = totalVotes - validVotes;
+                
+                const candidate1Percentage = 0.45 + (Math.random() * 0.1); // 45-55%
+                const candidate1Votes = Math.floor(validVotes * candidate1Percentage);
+                const candidate2Votes = validVotes - candidate1Votes;
+                
+                prevData = {
+                    totalVotes: totalVotes,
+                    validVotes: validVotes,
+                    invalidVotes: invalidVotes,
+                    eligibleVoters: 11_641_835,
+                    candidates: [
+                        {
+                            name: candidateNames[0],
+                            votes: candidate1Votes
+                        },
+                        {
+                            name: candidateNames[1],
+                            votes: candidate2Votes
+                        }
+                    ],
+                    lastUpdated: new Date().getTime()
+                };
+                return prevData;
+            } else {
+                const now = new Date().getTime();
+                const secondsSinceLastUpdate = Math.max(1, Math.floor((now - prevData.lastUpdated) / 1000));
+                
+                const baseNewVotesPerSecond = 1000 + Math.floor(Math.random() * 500);
+                const timeBoost = Math.min(5, Math.floor(prevData.totalVotes / 1000000)); // More votes come in as time passes
+                const newVotes = baseNewVotesPerSecond * secondsSinceLastUpdate * timeBoost;
+                
+                const newValidVotes = Math.floor(newVotes * (0.97 + (Math.random() * 0.02)));
+                const newInvalidVotes = newVotes - newValidVotes;
+                
+                const currentGap = Math.abs(prevData.candidates[0].votes - prevData.candidates[1].votes);
+                const percentGap = currentGap / prevData.validVotes;
+                
+                let candidate1Favor = 0.5;
+                if (percentGap > 0.05) {
+                    candidate1Favor = prevData.candidates[0].votes < prevData.candidates[1].votes ? 0.55 : 0.45;
+                } else {
+                    candidate1Favor = 0.45 + (Math.random() * 0.1);
+                }
+                
+                const newCandidate1Votes = Math.floor(newValidVotes * candidate1Favor);
+                const newCandidate2Votes = newValidVotes - newCandidate1Votes;
+                
+                prevData.totalVotes += newVotes;
+                prevData.validVotes += newValidVotes;
+                prevData.invalidVotes += newInvalidVotes;
+                prevData.candidates[0].votes += newCandidate1Votes;
+                prevData.candidates[1].votes += newCandidate2Votes;
+                prevData.lastUpdated = now;
+                
+                return prevData;
+            }
+        }
+        
+        async function fetchData() {
+            try {
+                const response = await fetch(dataUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                updateUI(null);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            countdownEl = document.getElementById('countdown');
+            fetchData();
+        });
+    </script>
+</body>
+</html>
